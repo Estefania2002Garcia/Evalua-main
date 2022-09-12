@@ -10,6 +10,7 @@ namespace Evalua
             try
             {
                 Lenguaje a = new Lenguaje();
+                
 
                 a.Programa();
 
@@ -31,7 +32,7 @@ namespace Evalua
             }
             catch (Exception)
             {
-                //Console.WriteLine("Fin de compilacion");
+                
             }
         }
     }

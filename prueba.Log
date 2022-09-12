@@ -1,38 +1,12 @@
-Primer constructor
 Archivo: prueba.cpp
-02/09/2022 09:25:54 a. m.
-# | Caracter
-include | Identificador
-< | OperadorRelacional
-iostream | Identificador
-. | Caracter
-h | Identificador
-> | OperadorRelacional
-# | Caracter
-include | Identificador
-< | OperadorRelacional
-stdio | Identificador
-. | Caracter
-h | Identificador
-> | OperadorRelacional
-# | Caracter
-include | Identificador
-< | OperadorRelacional
-conio | Identificador
-. | Caracter
-h | Identificador
-> | OperadorRelacional
-float | TipoDato
-resultado | Identificador
-; | FinSentencia
-int | TipoDato
-a | Identificador
-, | Caracter
-b | Identificador
-, | Caracter
-c | Identificador
-, | Caracter
-d | Identificador
-, | Caracter
-a | Identificador
-Error de sintaxis, variable duplicada <a> en linea: 5
+10/09/2022 19:45:51
+
+pi = 3.141592653589793 = 3,1415928E+15
+
+area = pi radio radio * + = 0
+area 
+Variables: 
+resultado Float 0
+area Float 0
+radio Float 0
+pi Float 0

@@ -2,9 +2,9 @@ namespace Evalua
 {
     public class Variable
     {
-        public enum TipoDato         //TIPO DE DATOS QUE RECONOCE EL LENGUAJE -- EXISTEN LEXICO 
+        public enum TipoDato
         {
-            Char, Int, Float
+            Char,Int,Float
         }
         string nombre;
         float valor;
@@ -31,10 +31,10 @@ namespace Evalua
         {
             return this.nombre;
         }
-        public TipoDato getTipoDato()
+
+        public TipoDato getTipo()
         {
             return this.tipo;
         }
-        
     }
 }

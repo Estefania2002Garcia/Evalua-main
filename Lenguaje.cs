@@ -1,21 +1,18 @@
 using System;
 using System.Collections.Generic;
-/*Requerimiento 1.- Eliminar las dobles comillas del printf e interpretar las secuencias
-                    dentro de la cadena
-  Requetimiento 2.- Marcar los errores sintancticos cuando la variable no exista
-                    -si la variable no existe declarar que no existe
-*/
-/*Requerimiento 3.- modificara el valor de la variable en la asignacion(metodo asignacion)*/
+//Requerimiento 1.- Eliminar las dobles comillas del printf e interpretar las secuencias de escape
+//                  dentro de la cadena
+//Requerimiento 2.- Marcar los errores sintacticos cuando la variable no exista
+//Requerimiento 3.- Modificar el valor de la variable en la asignacion
+//Requerimiento 4.- Obtener el valor de la variable cuando se requiera y programar el metodo getValor
+//Requerimiento 5.- Modificar el valor de la variable en el scanf.
 namespace Evalua
 {
-
     public class Lenguaje : Sintaxis
     {
-
-        //MINUSCULA PARA EVITAR QUE EXISTAN DOS Variables CON EL METODO VARIABLES
-        //NO SE PUEDE NOMBRAR AL IGUAL QUE UN METODO PREVIAMENTE PROGRAMADO 
-        List<Variable> variables = new List<Variable>();
+        List <Variable> variables = new List<Variable>();
         Stack<float> stack = new Stack<float>();
+
         public Lenguaje()
         {
 
@@ -24,32 +21,41 @@ namespace Evalua
         {
 
         }
-        //PASAMOS EL NOMBRE Y TIPO DE DATO Y QUE LO AGREGUE A LA LISTA
-        private void addVariable(string nombre, Variable.TipoDato tipo)
+
+        private void addVariable(String nombre,Variable.TipoDato tipo)
         {
-            //AGREGAMOS A LA LISTA UNA NUEVA VARIABLE
             variables.Add(new Variable(nombre, tipo));
         }
-        private void displayVariables( )
+
+        private void displayVariables()
         {
+            log.WriteLine();
+            log.WriteLine("Variables: ");
             foreach (Variable v in variables)
             {
-                log.WriteLine(v.getNombre() + " " + v.getTipoDato() + " " + v.getValor());
+                log.WriteLine(v.getNombre()+" "+v.getTipo()+" "+v.getValor());
             }
         }
 
-        private bool existeVariable (string nombre) //SABER SI EXISTE LA VARIABLE
+        private bool existeVariable(string nombre)
         {
             foreach (Variable v in variables)
             {
                 if (v.getNombre().Equals(nombre))
+                {
                     return true;
+                }
             }
             return false;
         }
-private void modVariable(string name, float nuevoValor){
-
-}
+        private void modVariable(string nombre, float nuevoValor)
+        {
+            
+        }
+        private float getValor(string nombreVariable)
+        {
+            return 0;
+        }
         //Programa  -> Librerias? Variables? Main
         public void Programa()
         {
@@ -83,7 +89,7 @@ private void modVariable(string name, float nuevoValor){
         {
             if (getClasificacion() == Tipos.TipoDato)
             {
-                Variable.TipoDato tipo = Variable.TipoDato.Char;
+                Variable.TipoDato tipo = Variable.TipoDato.Char; 
                 switch (getContenido())
                 {
                     case "int": tipo = Variable.TipoDato.Int; break;
@@ -96,8 +102,8 @@ private void modVariable(string name, float nuevoValor){
             }
         }
 
-        //Lista_identificadores -> identificador (,Lista_identificadores)?
-        private void Lista_identificadores(Variable.TipoDato tipo)      //RECIBE EL TIPO DE DATO DE LA VARIABLE
+         //Lista_identificadores -> identificador (,Lista_identificadores)?
+        private void Lista_identificadores(Variable.TipoDato tipo)
         {
             if (getClasificacion() == Tipos.Identificador)
             {
@@ -107,7 +113,7 @@ private void modVariable(string name, float nuevoValor){
                 }
                 else
                 {
-                    throw new Error("Error de sintaxis, variable duplicada <" + getContenido() +"> en linea: "+linea, log);
+                    throw new Error("Error de sintaxis, variable duplicada <" +getContenido()+"> en linea: "+linea, log);
                 }
             }
             match(Tipos.Identificador);
@@ -188,21 +194,18 @@ private void modVariable(string name, float nuevoValor){
         //Asignacion -> identificador = cadena | Expresion;
         private void Asignacion()
         {
-            //REQUERIMIENTO 2-(SI NO EXISTE LA VARIABLE(GETCONTENIDO) SE LEVANTA LA EXCEPCION) Y TERMINA EL PROGRAMA
-           log.WriteLine();
-           log.Write(getContenido()+" = ");
-           string nombre = getContenido();
-            match(Tipos.Identificador);             
-            //DEBE DE EXISTIR LA VARIABLE SI NO SE LEVNATA LA EXCEPCION
+            //Requerimiento 2.- Si no existe la variable levanta la excepcion
+            log.WriteLine();
+            log.Write(getContenido()+" = ");
+            string nombre = getContenido();
+            match(Tipos.Identificador);
             match(Tipos.Asignacion);
-            //SE ELIMINO EL IF PORQUE NO EXISTE EL TIPO DE DATO CADENA
             Expresion();
             match(";");
             float resultado = stack.Pop();
-            log.Write("= "+resultado);
+            log.Write("= "+ resultado);
             log.WriteLine();
-            modVariable+(nombre,resultado);
-
+            modVariable(nombre, resultado);
         }
 
         //While -> while(Condicion) bloque de instrucciones | instruccion
@@ -263,15 +266,18 @@ private void modVariable(string name, float nuevoValor){
         //Incremento -> Identificador ++ | --
         private void Incremento()
         {
-            // REQUERIMIENTO 2 SI NO EXISTE LA VARIABLE SE LEVANTA LA EXCEPCION
+            string variable = getContenido();
+            //Requerimiento 2.- Si no existe la variable levanta la excepcion
             match(Tipos.Identificador);
-            if(getContenido() == "+")
+            if(getContenido() == "++")
             {
                 match("++");
+                modVariable(variable, getValor(variable)+1);
             }
             else
             {
                 match("--");
+                modVariable(variable, getValor(variable)+1);
             }
         }
 
@@ -281,6 +287,7 @@ private void modVariable(string name, float nuevoValor){
             match("switch");
             match("(");
             Expresion();
+            stack.Pop();
             match(")");
             match("{");
             ListaDeCasos();
@@ -305,6 +312,7 @@ private void modVariable(string name, float nuevoValor){
         {
             match("case");
             Expresion();
+            stack.Pop();
             match(":");
             ListaInstruccionesCase();
             if(getContenido() == "break")
@@ -322,8 +330,10 @@ private void modVariable(string name, float nuevoValor){
         private void Condicion()
         {
             Expresion();
+            stack.Pop();
             match(Tipos.OperadorRelacional);
             Expresion();
+            stack.Pop();
         }
 
         //If -> if(Condicion) bloque de instrucciones (else bloque de instrucciones)?
@@ -356,22 +366,37 @@ private void modVariable(string name, float nuevoValor){
         }
 
         //Printf -> printf(cadena);
+        //requirimeinto 1
         private void Printf()
         {
             match("printf");
             match("(");
-            Console.Write(getContenido());
-            match(Tipos.Cadena);
+            if (getClasificacion() == Tipos.Cadena)
+            {
+               Console.Write(getContenido());
+               match(Tipos.Cadena); 
+            }
+            else
+            {
+                Expresion();
+                Console.Write(stack.Pop());
+            }
             match(")");
             match(";");
         }
 
-        //Scanf -> scanf(cadena);
+        //Scanf -> scanf(cadena, &Identificador);
         private void Scanf()    
         {
             match("scanf");
             match("(");
             match(Tipos.Cadena);
+            match(",");
+            match ("&");
+            //Requerimiento 2.- Si no existe la variable levanta la excepcion
+            string val = "" +Console.ReadLine();
+            //Requerimiento 5.- Modificar el valor de la variable
+            match(Tipos.Identificador);
             match(")");
             match(";");
         }
@@ -400,16 +425,17 @@ private void modVariable(string name, float nuevoValor){
                 string operador = getContenido();
                 match(Tipos.OperadorTermino);
                 Termino();
-                log.Write(operador+ " ");
-                float n1 =stack.Pop();
+                log.Write(operador + " ");
+                float n1 = stack.Pop();
                 float n2 = stack.Pop();
-                switch(operador){
+                switch (operador)
+                {
                     case "+":
-                    match(stack.Push(n2 + n1));
-                    break;
+                        stack.Push(n2 + n1);
+                        break;
                     case "-":
-                    stack.Push(n2 - n1);
-                    break;
+                        stack.Push(n2 - n1);
+                        break;
                 }
             }
         }
@@ -427,32 +453,34 @@ private void modVariable(string name, float nuevoValor){
                 string operador = getContenido();
                 match(Tipos.OperadorFactor);
                 Factor();
-                log.Write(operador+" ");
-                float n1 =stack.Pop();
+                log.Write(operador + " ");
+                float n1 = stack.Pop();
                 float n2 = stack.Pop();
-                switch(operador){
+                switch (operador)
+                {
                     case "*":
-                    match(stack.Push(n2 * n1));
-                    break;
+                        stack.Push(n2 * n1);
+                        break;
                     case "/":
-                    stack.Push(n2 / n1);
-                    break;
+                        stack.Push(n2 / n1);
+                        break;
                 }
             }
         }
         //Factor -> numero | identificador | (Expresion)
         private void Factor()
         {
-
             if (getClasificacion() == Tipos.Numero)
             {
-                log.Write(getContenido()+" ");
-                stack.Push(float.Parse(getContenido());
+                log.Write(getContenido() + " " );
+                stack.Push(float.Parse(getContenido()));
                 match(Tipos.Numero);
             }
             else if (getClasificacion() == Tipos.Identificador)
             {
-                // REQUERIMIENTO 2 SI NO EXISTE LA VARIABLE SE LEVANTA LA EXCEPCION
+                //Requerimiento 2.- Si no existe la variable levanta la excepcion
+                log.Write(getContenido() + " " );
+                stack.Push(getValor((getContenido())));
                 match(Tipos.Identificador);
             }
             else
