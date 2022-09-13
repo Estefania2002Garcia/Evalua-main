@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-//Requerimiento 1.- Eliminar las dobles comillas del printf e interpretar las secuencias de escape
+//Requerimiento 1.- Requerimiento 1.- Eliminar las dobles comillas del printf e interpretar las secuencias
 //                  dentro de la cadena
 //Requerimiento 2.- Marcar los errores sintacticos cuando la variable no exista
 //Requerimiento 3.- Modificar el valor de la variable en la asignacion
@@ -50,10 +50,15 @@ namespace Evalua
         }
         private void modVariable(string nombre, float nuevoValor)
         {
-            
+        foreach (var v in variables)   
+        if (v.getNombre() == nombre)  
+        v.setValor(nuevoValor); 
         }
         private float getValor(string nombreVariable)
         {
+            foreach (Variable v in variables)  
+            if (v.getNombre().Equals(nombreVariable)) 
+            return v.getValor(); 
             return 0;
         }
         //Programa  -> Librerias? Variables? Main
@@ -194,10 +199,14 @@ namespace Evalua
         //Asignacion -> identificador = cadena | Expresion;
         private void Asignacion()
         {
+            string nombre = getContenido(); 
+            if(!existeVariable(getContenido()))
+            throw new Error("Error: No existe la variable " + getContenido() + " en linea: "+ linea, log);
+            match(Tipos.Identificador); 
             //Requerimiento 2.- Si no existe la variable levanta la excepcion
             log.WriteLine();
             log.Write(getContenido()+" = ");
-            string nombre = getContenido();
+
             match(Tipos.Identificador);
             match(Tipos.Asignacion);
             Expresion();
@@ -268,16 +277,18 @@ namespace Evalua
         {
             string variable = getContenido();
             //Requerimiento 2.- Si no existe la variable levanta la excepcion
+            if(!existeVariable(getContenido()))
+            throw new Error("Error: No existe la variable " + getContenido() + " en linea: "+linea, log);
             match(Tipos.Identificador);
             if(getContenido() == "++")
-            {
-                match("++");
+             {
                 modVariable(variable, getValor(variable)+1);
+                match("++");
             }
             else
             {
+                modVariable(variable, getValor(variable)-1);
                 match("--");
-                modVariable(variable, getValor(variable)+1);
             }
         }
 
@@ -373,6 +384,9 @@ namespace Evalua
             match("(");
             if (getClasificacion() == Tipos.Cadena)
             {
+               setContenido(getContenido().Replace("\\t", "    "));
+               setContenido(getContenido().Replace("\\n", "\n"));
+               setContenido(getContenido().Replace("\"", string.Empty));
                Console.Write(getContenido());
                match(Tipos.Cadena); 
             }
@@ -381,6 +395,7 @@ namespace Evalua
                 Expresion();
                 Console.Write(stack.Pop());
             }
+        
             match(")");
             match(";");
         }
@@ -394,8 +409,11 @@ namespace Evalua
             match(",");
             match ("&");
             //Requerimiento 2.- Si no existe la variable levanta la excepcion
-            string val = "" +Console.ReadLine();
+            if(!existeVariable(getContenido()))
+            throw new Error("Error: No existe la variable " + getContenido() + " en linea: "+linea, log);
             //Requerimiento 5.- Modificar el valor de la variable
+            string val = "" +Console.ReadLine();
+            modVariable(getContenido(), float.Parse(val));
             match(Tipos.Identificador);
             match(")");
             match(";");
